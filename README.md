@@ -20,3 +20,4 @@ Demonstrate secure GitOps delivery with:
 - Admission control
 - Image signing
 - Automated rollback
+
