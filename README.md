@@ -1,7 +1,6 @@
 # Secure GitOps AKS Platform
 
 Production-style DevSecOps GitOps platform using:
-
 - AKS
 - ArgoCD
 - Kyverno
