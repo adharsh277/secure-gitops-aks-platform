@@ -8,7 +8,6 @@ Production-style DevSecOps GitOps platform using:
 - Trivy
 - Cosign
 - GitHub Actions
-
 ## Architecture
 
 Codespaces → CI → ACR → AKS → ArgoCD → Policy Enforcement
