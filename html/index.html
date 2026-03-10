@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>AI Modernized DevOps</title>
+	<style>
+		:root {
+			--bg-1: #071426;
+			--bg-2: #0d1f3c;
+			--panel: rgba(11, 24, 46, 0.78);
+			--text: #eaf2ff;
+			--muted: #9ab0ce;
+			--primary: #33d6ff;
+			--accent: #6dffb8;
+			--border: rgba(118, 171, 255, 0.25);
+			--shadow: 0 20px 50px rgba(2, 8, 20, 0.45);
+		}
+
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			min-height: 100vh;
+			font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+			color: var(--text);
+			background:
+				radial-gradient(circle at 15% 20%, rgba(51, 214, 255, 0.16) 0, rgba(51, 214, 255, 0) 40%),
+				radial-gradient(circle at 85% 15%, rgba(109, 255, 184, 0.14) 0, rgba(109, 255, 184, 0) 38%),
+				linear-gradient(130deg, var(--bg-1), var(--bg-2));
+			overflow-x: hidden;
+		}
+
+		.grid-overlay {
+			position: fixed;
+			inset: 0;
+			pointer-events: none;
+			opacity: 0.25;
+			background-image:
+				linear-gradient(rgba(154, 176, 206, 0.1) 1px, transparent 1px),
+				linear-gradient(90deg, rgba(154, 176, 206, 0.1) 1px, transparent 1px);
+			background-size: 46px 46px;
+			mask-image: radial-gradient(circle at center, black 55%, transparent 100%);
+		}
+
+		.page {
+			max-width: 1100px;
+			margin: 0 auto;
+			padding: 28px 20px 64px;
+			position: relative;
+			z-index: 1;
+		}
+
+		.nav {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 48px;
+			animation: rise 0.7s ease;
+		}
+
+		.logo {
+			letter-spacing: 0.08em;
+			font-weight: 700;
+			font-size: 0.95rem;
+			color: var(--primary);
+			text-transform: uppercase;
+		}
+
+		.status {
+			font-size: 0.85rem;
+			color: var(--muted);
+			border: 1px solid var(--border);
+			border-radius: 999px;
+			padding: 7px 12px;
+			background: rgba(4, 14, 30, 0.45);
+		}
+
+		.hero {
+			display: grid;
+			gap: 20px;
+			grid-template-columns: 1.1fr 0.9fr;
+			align-items: center;
+		}
+
+		h1 {
+			font-size: clamp(2rem, 5vw, 3.7rem);
+			line-height: 1.06;
+			margin-bottom: 16px;
+			animation: rise 0.9s ease;
+		}
+
+		.lead {
+			color: var(--muted);
+			font-size: 1.05rem;
+			line-height: 1.6;
+			max-width: 62ch;
+			margin-bottom: 28px;
+			animation: rise 1.1s ease;
+		}
+
+		.cta-row {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+			animation: rise 1.25s ease;
+		}
+
+		.btn {
+			border: 1px solid transparent;
+			border-radius: 10px;
+			padding: 11px 17px;
+			text-decoration: none;
+			font-weight: 600;
+			font-size: 0.95rem;
+			transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+		}
+
+		.btn.primary {
+			background: linear-gradient(120deg, var(--primary), #47a8ff);
+			color: #06213c;
+			box-shadow: 0 10px 24px rgba(51, 214, 255, 0.3);
+		}
+
+		.btn.secondary {
+			color: var(--text);
+			border-color: var(--border);
+			background: rgba(11, 23, 43, 0.6);
+		}
+
+		.btn:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 14px 26px rgba(5, 17, 37, 0.4);
+		}
+
+		.visual {
+			border: 1px solid var(--border);
+			background: var(--panel);
+			border-radius: 18px;
+			box-shadow: var(--shadow);
+			padding: 18px;
+			animation: rise 1.2s ease;
+		}
+
+		.terminal {
+			border-radius: 12px;
+			background: #061120;
+			border: 1px solid rgba(95, 165, 255, 0.3);
+			padding: 16px;
+			font-family: "Consolas", "Courier New", monospace;
+			font-size: 0.85rem;
+			color: #b8cced;
+			line-height: 1.45;
+			overflow: hidden;
+			position: relative;
+		}
+
+		.terminal::after {
+			content: "";
+			position: absolute;
+			left: -30%;
+			top: -80%;
+			width: 40%;
+			height: 260%;
+			background: linear-gradient(to right, transparent, rgba(109, 255, 184, 0.14), transparent);
+			transform: rotate(22deg);
+			animation: scan 5s linear infinite;
+		}
+
+		.metrics {
+			margin-top: 14px;
+			display: grid;
+			gap: 10px;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+
+		.metric {
+			border: 1px solid var(--border);
+			background: rgba(8, 19, 36, 0.65);
+			border-radius: 12px;
+			padding: 10px;
+			text-align: center;
+		}
+
+		.metric strong {
+			display: block;
+			font-size: 1.1rem;
+			color: var(--accent);
+		}
+
+		.metric span {
+			color: var(--muted);
+			font-size: 0.75rem;
+			letter-spacing: 0.04em;
+			text-transform: uppercase;
+		}
+
+		.section-title {
+			margin: 58px 0 16px;
+			font-size: 1.35rem;
+			animation: rise 1.35s ease;
+		}
+
+		.features {
+			display: grid;
+			gap: 14px;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			animation: rise 1.45s ease;
+		}
+
+		.card {
+			border: 1px solid var(--border);
+			border-radius: 14px;
+			background: rgba(7, 20, 38, 0.72);
+			padding: 15px;
+			box-shadow: var(--shadow);
+		}
+
+		.card h3 {
+			color: #d8ecff;
+			margin-bottom: 9px;
+			font-size: 1.03rem;
+		}
+
+		.card p {
+			color: var(--muted);
+			line-height: 1.5;
+			font-size: 0.93rem;
+		}
+
+		@keyframes rise {
+			from {
+				opacity: 0;
+				transform: translateY(16px);
+			}
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		@keyframes scan {
+			from {
+				transform: translateX(0) rotate(22deg);
+			}
+			to {
+				transform: translateX(320%) rotate(22deg);
+			}
+		}
+
+		@media (max-width: 900px) {
+			.hero,
+			.features,
+			.metrics {
+				grid-template-columns: 1fr;
+			}
+
+			.page {
+				padding-top: 20px;
+			}
+
+			.section-title {
+				margin-top: 38px;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="grid-overlay" aria-hidden="true"></div>
+
+	<main class="page">
+		<header class="nav">
+			<div class="logo">NeuralOps Cloud</div>
+			<div class="status">AI Pipeline: Active</div>
+		</header>
+
+		<section class="hero">
+			<div>
+				<h1>DevOps, modernized by AI for zero-friction delivery</h1>
+				<p class="lead">
+					From code commit to production rollout, AI continuously reasons over risk,
+					automates policy checks, and tunes delivery flow. Teams ship faster while
+					reliability and security improve with every deploy.
+				</p>
+				<div class="cta-row">
+					<a class="btn primary" href="#">Start Free Trial</a>
+					<a class="btn secondary" href="#">View Live Demo</a>
+				</div>
+			</div>
+
+			<aside class="visual" aria-label="Futuristic deployment panel">
+				<div class="terminal">
+					&gt; ingest telemetry --source clusters<br />
+					&gt; detect_anomaly latency_spike --confidence 98.2%<br />
+					&gt; generate_patch --service checkout-api<br />
+					&gt; run policy_guardrails --framework kyverno<br />
+					&gt; progressive_rollout --strategy canary<br />
+					&gt; rollout_status: healthy | auto_promoted
+				</div>
+				<div class="metrics">
+					<div class="metric"><strong>74%</strong><span>Faster Releases</span></div>
+					<div class="metric"><strong>62%</strong><span>Fewer Incidents</span></div>
+					<div class="metric"><strong>99.96%</strong><span>Uptime SLO</span></div>
+				</div>
+			</aside>
+		</section>
+
+		<h2 class="section-title">How AI modernizes DevOps</h2>
+		<section class="features">
+			<article class="card">
+				<h3>Predictive Delivery</h3>
+				<p>
+					Forecast deployment risk before merge by analyzing commit history,
+					runtime signals, and change blast radius.
+				</p>
+			</article>
+			<article class="card">
+				<h3>Policy by Default</h3>
+				<p>
+					Enforce security and compliance in every environment with automated,
+					explainable decisions in the CI/CD path.
+				</p>
+			</article>
+			<article class="card">
+				<h3>Self-Healing Operations</h3>
+				<p>
+					Detect issues, recommend remediations, and trigger safe rollbacks or
+					hotfix workflows without operator bottlenecks.
+				</p>
+			</article>
+		</section>
+	</main>
+</body>
+</html>
