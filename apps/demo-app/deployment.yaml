@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: gitopsacradharsh.azurecr.io/demo-app:a3013e473aea85c09119ec308d75c7b4090d1b65
+        image: gitopsacradharsh.azurecr.io/demo-app:0c7e1749712e9a3dd0df2854cb1e01364d93323e
         ports:
         - containerPort: 80
