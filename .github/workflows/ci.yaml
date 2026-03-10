@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 env:
   ACR_NAME: gitopsacradharsh
   IMAGE_NAME: demo-app
