@@ -1,4 +1,4 @@
-name: Build Scan and Push Image
+name: Build Scan Sign and Push Image
 
 on:
   push:
@@ -44,6 +44,17 @@ jobs:
           exit-code: 1
           ignore-unfixed: true
           severity: CRITICAL
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign container image
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+        run: |
+          echo "$COSIGN_PRIVATE_KEY" > cosign.key
+          cosign sign --key cosign.key $ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }}
 
       - name: Push Docker Image
         run: |
