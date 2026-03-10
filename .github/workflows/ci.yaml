@@ -1,4 +1,4 @@
-name: Build and Push Image
+name: Build Scan and Push Image
 
 on:
   push:
@@ -35,6 +35,14 @@ jobs:
       - name: Build Docker Image
         run: |
           docker build -t $ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }} .
+
+      - name: Run Trivy Vulnerability Scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          format: table
+          exit-code: 1
+          severity: CRITICAL,HIGH
 
       - name: Push Docker Image
         run: |
