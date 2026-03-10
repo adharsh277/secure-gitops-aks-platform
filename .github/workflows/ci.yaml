@@ -1,74 +1,76 @@
 name: Build Scan Sign and Push Image
 
 on:
-  push:
-    branches:
-      - main
+push:
+branches:
+- main
 
 permissions:
-  contents: write
+contents: write
 
 env:
-  ACR_NAME: gitopsacradharsh
-  IMAGE_NAME: demo-app
+ACR_NAME: gitopsacradharsh
+IMAGE_NAME: demo-app
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+build:
+runs-on: ubuntu-latest
 
-    steps:
+```
+steps:
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+  - name: Checkout repository
+    uses: actions/checkout@v4
+    with:
+      token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+  - name: Login to Azure
+    uses: azure/login@v1
+    with:
+      creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Login to ACR
-        run: |
-          az acr login --name $ACR_NAME
+  - name: Login to ACR
+    run: |
+      az acr login --name $ACR_NAME
 
-      - name: Build Docker Image
-        run: |
-          docker build -t $ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }} .
+  - name: Build Docker Image
+    run: |
+      docker build -t $ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }} .
 
-      - name: Run Trivy Vulnerability Scan
-        uses: aquasecurity/trivy-action@0.24.0
-        with:
-          image-ref: ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
-          format: table
-          exit-code: 1
-          ignore-unfixed: true
-          severity: CRITICAL
+  - name: Run Trivy Vulnerability Scan
+    uses: aquasecurity/trivy-action@0.24.0
+    with:
+      image-ref: ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+      format: table
+      exit-code: 1
+      ignore-unfixed: true
+      severity: CRITICAL
 
-      - name: Install Cosign
-        uses: sigstore/cosign-installer@v3
+  - name: Push Docker Image
+    run: |
+      docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }}
 
-      - name: Sign container image
-        env:
-          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
-          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
-        run: |
-          echo "$COSIGN_PRIVATE_KEY" > cosign.key
-          cosign sign --key cosign.key $ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }}
+  - name: Install Cosign
+    uses: sigstore/cosign-installer@v3
 
-      - name: Push Docker Image
-        run: |
-          docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }}
+  - name: Sign container image
+    env:
+      COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+      COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+    run: |
+      printf "%s" "$COSIGN_PRIVATE_KEY" > cosign.key
+      cosign sign --yes --key cosign.key $ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }}
 
-      - name: Update deployment image
-        run: |
-          IMAGE="$ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }}"
-          sed -i "s|image: .*|image: $IMAGE|" apps/demo-app/deployment.yaml
+  - name: Update deployment image
+    run: |
+      IMAGE="$ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }}"
+      sed -i "s|image: .*|image: $IMAGE|" apps/demo-app/deployment.yaml
 
-      - name: Commit and push updated deployment
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-          git add apps/demo-app/deployment.yaml
-          git commit -m "Update image to ${{ github.sha }}" || echo "No changes to commit"
-          git push
+  - name: Commit and push updated deployment
+    run: |
+      git config --global user.name "github-actions"
+      git config --global user.email "actions@github.com"
+      git add apps/demo-app/deployment.yaml
+      git commit -m "Update image to ${{ github.sha }}" || echo "No changes to commit"
+      git push
+```
