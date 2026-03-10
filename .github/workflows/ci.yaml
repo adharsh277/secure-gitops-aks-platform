@@ -18,7 +18,6 @@ runs-on: ubuntu-latest
 
 ```
 steps:
-
   - name: Checkout repository
     uses: actions/checkout@v4
     with:
@@ -73,3 +72,4 @@ steps:
       git add apps/demo-app/deployment.yaml
       git commit -m "Update image to ${{ github.sha }}" || echo "No changes to commit"
       git push
+
