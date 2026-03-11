@@ -4,6 +4,10 @@ A production-style DevSecOps platform on AKS that combines GitOps, software supp
 
 This repository demonstrates an end-to-end path from developer commit to safe Kubernetes rollout.
 
+## Architecture Diagram
+
+![Architecture Diagram](assets/arcdiag.png)
+
 ## Why This Project
 
 Most demos show one or two tools in isolation. This platform intentionally combines:
